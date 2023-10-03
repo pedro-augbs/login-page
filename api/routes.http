@@ -1,17 +1,27 @@
+# @name register
 POST http://localhost:3333/register
 Content-Type: application/json
 
 {
-  "email": "pindoramaa@gmail.com",
-  "password": "123456"
+  "email": "test@gmail.com",
+  "password": "12345678"
 }
 
 ###
-
+# @name login
 POST http://localhost:3333/login
 Content-Type: application/json
 
 {
-  "email": "pindoramaa@gmail.com",
-  "password": "123456"
+  "email": "test@gmail.com",
+  "password": "12345678"
+}
+
+###
+# @name user-info
+POST http://localhost:3333/user-info
+Content-Type: application/json
+
+{
+  "token": "ffff"
 }

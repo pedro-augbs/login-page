@@ -19,7 +19,7 @@ export async function loginUser(app: FastifyInstance) {
       const existingUser = await userEmail(email)
 
       if (!existingUser) {
-        console.log('existingUser')
+        console.log('not existingUser')
         return res.status(400).send({ error: 'Email or Password incorrect!' })
       }
 
@@ -33,14 +33,14 @@ export async function loginUser(app: FastifyInstance) {
       })
 
       if (!correctPass) {
-        console.log('correctPass')
+        console.log('not correctPass')
         return res.status(400).send({ error: 'Email or Password incorrect!' })
       }
 
       const verifyPass = await bcrypt.compare(password, correctPass?.password)
 
       if (!verifyPass) {
-        console.log('verifyPass')
+        console.log('not verifyPass')
         return res.status(400).send({ error: 'Email or Password incorrect!' })
       }
 
@@ -59,12 +59,20 @@ export async function loginUser(app: FastifyInstance) {
 
       const { password: _, ...userLogin } = existingUser
 
-      res.status(200).send({
-        JSON: {
-          user: userLogin,
-          token,
-        },
-      })
+      console.log('Deu bom')
+      res
+        .status(200)
+        .header('Authorization', `Bearer ${token}`)
+        .send({
+          JSON: {
+            user: userLogin,
+            token,
+          },
+        })
+      return {
+        token,
+        user: userLogin,
+      }
     } catch (err) {
       res.status(500).send(err)
     }
