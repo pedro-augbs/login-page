@@ -8,7 +8,8 @@ import { userEmail } from '../utils/info'
 
 export async function loginUser(app: FastifyInstance) {
   const BodySchema = z.object({
-    email: z.string(),
+    name: z.string(),
+    email: z.string().email(),
     password: z.string(),
   })
 
@@ -53,26 +54,23 @@ export async function loginUser(app: FastifyInstance) {
         },
       })
 
-      const token = jwt.sign({ id: userId }, process.env.JWT_PASS ?? '', {
+      const token = jwt.sign({ id: userId?.id }, process.env.JWT_PASS ?? '', {
         expiresIn: '1800',
+      })
+
+      await prisma.user.update({
+        data: {
+          token,
+        },
+        where: {
+          id: userId?.id,
+        },
       })
 
       const { password: _, ...userLogin } = existingUser
 
       console.log('Deu bom')
-      res
-        .status(200)
-        .header('Authorization', `Bearer ${token}`)
-        .send({
-          JSON: {
-            user: userLogin,
-            token,
-          },
-        })
-      return {
-        token,
-        user: userLogin,
-      }
+      res.status(200).send({ user: userLogin, token })
     } catch (err) {
       res.status(500).send(err)
     }

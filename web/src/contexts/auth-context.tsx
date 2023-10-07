@@ -1,8 +1,6 @@
 'use client'
-// import { cookies } from 'next/headers'
 
 import { ReactNode, createContext, useEffect, useState } from 'react'
-import Router from 'next/router'
 import { z } from 'zod'
 import { getCookie, setCookie } from 'cookies-next'
 
@@ -38,12 +36,9 @@ export const AuthContext = createContext({} as AuthContextProps)
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
 
-  // const cookie = cookies()
-
   const isAuthenticated = !!user
 
   useEffect(() => {
-    // const token = cookie.get('login-page-token')
     const token = getCookie('login-page-token')
 
     if (token) {
@@ -59,7 +54,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       password,
     })
 
-    // cookie.set('login-page-token', token, { maxAge: 60 * 60 * 1 /* 1 hour */ })
     setCookie('login-page-token', token, { maxAge: 60 * 60 * 1 /* 1 hour */ })
 
     api.defaults.headers.Authorization = `Bearer ${token}`

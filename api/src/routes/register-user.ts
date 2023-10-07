@@ -4,6 +4,7 @@ import { z } from 'zod'
 
 import { prisma } from '../lib/prisma'
 import { userEmail } from '../utils/info'
+import { validateEmail } from '../utils/validations'
 
 export async function registerUser(app: FastifyInstance) {
   const BodySchema = z.object({
@@ -12,9 +13,11 @@ export async function registerUser(app: FastifyInstance) {
   })
 
   app.post('/register', async (req, res) => {
+    const { email, password } = BodySchema.parse(req.body)
     try {
-      const { email, password } = BodySchema.parse(req.body)
-
+      if (!validateEmail(email)) {
+        return res.status(400).send({ error: 'Invalid Email' })
+      }
       const existingUser = await userEmail(email)
 
       if (existingUser) {

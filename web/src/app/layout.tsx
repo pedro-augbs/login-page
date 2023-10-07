@@ -16,21 +16,23 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <AuthProvider>
-      <html
-        lang="pt-BR"
-        className={`${roboto.variable} font-sans`}
-        suppressHydrationWarning
-      >
+    <html
+      lang="pt-BR"
+      className={`${roboto.variable} font-sans`}
+      suppressHydrationWarning
+    >
+      <AuthProvider>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <body className="min-h-screen bg-background">{children}</body>
+          <body className="min-h-screen bg-background" suppressHydrationWarning>
+            {children}
+          </body>
         </ThemeProvider>
-      </html>
-    </AuthProvider>
+      </AuthProvider>
+    </html>
   )
 }
