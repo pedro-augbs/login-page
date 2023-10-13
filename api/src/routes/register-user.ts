@@ -1,24 +1,27 @@
 import { FastifyInstance } from 'fastify'
-import bcrypt from 'bcrypt'
 import { z } from 'zod'
 
-import { prisma } from '../lib/prisma'
-import { userEmail } from '../utils/info'
-import { validateEmail } from '../utils/validations'
+import { prismaUser } from '../utils/prisma-user'
+
+import bcrypt from 'bcrypt'
+
+import { randomUUID } from 'node:crypto'
+
+const BodySchema = z.object({
+  name: z.string(),
+  email: z.string().email(),
+  password: z.string(),
+})
 
 export async function registerUser(app: FastifyInstance) {
-  const BodySchema = z.object({
-    email: z.string(),
-    password: z.string(),
-  })
-
   app.post('/register', async (req, res) => {
-    const { email, password } = BodySchema.parse(req.body)
+    const { email, password, name } = BodySchema.parse(req.body)
     try {
-      if (!validateEmail(email)) {
-        return res.status(400).send({ error: 'Invalid Email' })
-      }
-      const existingUser = await userEmail(email)
+      const existingUser = await prismaUser.findUnique({
+        where: {
+          email,
+        },
+      })
 
       if (existingUser) {
         return res.status(400).send({ error: 'User already exists' })
@@ -26,13 +29,14 @@ export async function registerUser(app: FastifyInstance) {
 
       const hashPassword = await bcrypt.hash(password, 10)
 
-      await prisma.user.create({
+      await prismaUser.create({
         data: {
+          id: randomUUID(),
+          name,
           email,
           password: hashPassword,
         },
       })
-
       res.status(200).send('User created!')
     } catch (err) {
       res.status(500).send(err)

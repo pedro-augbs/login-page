@@ -3,6 +3,7 @@ POST http://localhost:3333/register
 Content-Type: application/json
 
 {
+  "name": "test",
   "email": "email@example.com",
   "password": "12345678"
 }
@@ -13,15 +14,25 @@ POST http://localhost:3333/login
 Content-Type: application/json
 
 {
-  "email": "test@gmail.com",
+  "email": "email@example.com",
   "password": "12345678"
 }
 
 ###
-# @name user-info
-POST http://localhost:3333/user-info
+# @name get-user
+POST http://localhost:3333/get-user
 Content-Type: application/json
 
 {
   "token": "ffff"
+}
+
+
+###
+# @name delete-user
+DELETE http://localhost:3333/delete-user
+Content-Type: application/json
+
+{
+  "email": "email@example.com"
 }

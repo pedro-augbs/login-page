@@ -3,20 +3,16 @@ import z from 'zod'
 
 import { prisma } from '../lib/prisma'
 
-export async function userInfo(app: FastifyInstance) {
+export async function getUser(app: FastifyInstance) {
   const BodySchema = z.object({
     token: z.string(),
   })
 
-  app.post('/user-info', async (req, res) => {
+  app.post('/get-user', async (req, res) => {
     try {
       const { token } = BodySchema.parse(req.body)
 
       const userInfo = await prisma.user.findFirst({
-        select: {
-          id: true,
-          email: true,
-        },
         where: { token },
       })
 
@@ -24,7 +20,9 @@ export async function userInfo(app: FastifyInstance) {
         return res.status(400).send({ error: 'User not found' })
       }
 
-      return { userInfo }
+      const { password: _, ...user } = userInfo
+
+      return user
     } catch (err) {
       res.status(500).send(err)
     }

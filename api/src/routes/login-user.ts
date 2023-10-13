@@ -1,10 +1,10 @@
+import { prismaUser } from './../utils/prisma-user'
 import { FastifyInstance } from 'fastify'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import { z } from 'zod'
 
 import { prisma } from '../lib/prisma'
-import { userEmail } from '../utils/info'
 
 export async function loginUser(app: FastifyInstance) {
   const BodySchema = z.object({
@@ -17,7 +17,9 @@ export async function loginUser(app: FastifyInstance) {
     try {
       const { email, password } = BodySchema.parse(req.body)
 
-      const existingUser = await userEmail(email)
+      const existingUser = await prismaUser.findUnique({
+        where: { email },
+      })
 
       if (!existingUser) {
         console.log('not existingUser')
